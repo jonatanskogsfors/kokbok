@@ -9,7 +9,7 @@ title: Alla recept
 
   <div class="category-grid">
     {% for category in categories %}
-      <a href="/kategorier/{{ category.slug }}/" class="category-card">
+      <a href="{{ ('/kategorier/' + category.slug + '/') | url }}" class="category-card">
         <span class="category-name">{{ category.name }}</span>
         <span class="category-count">{{ category.recipes.length }} recept</span>
       </a>

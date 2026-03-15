@@ -11,7 +11,7 @@ layout: base.njk
   <ul class="recipe-list">
     {% for recipe in category.recipes %}
       <li>
-        <a href="/recept/{{ recipe.slug }}/">{{ recipe.title }}</a>
+        <a href="{{ ('/recept/' + recipe.slug + '/') | url }}">{{ recipe.title }}</a>
       </li>
     {% endfor %}
   </ul>

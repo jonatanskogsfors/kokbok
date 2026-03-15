@@ -19,7 +19,7 @@ layout: base.njk
     {% if recipe.tags and recipe.tags.length %}
       <ul class="recipe-tags">
         {% for tag in recipe.tags %}
-          <li><a href="/taggar/{{ tag | slugify }}/">{{ tag }}</a></li>
+          <li><a href="{{ ('/taggar/' + (tag | slugify) + '/') | url }}">{{ tag }}</a></li>
         {% endfor %}
       </ul>
     {% endif %}

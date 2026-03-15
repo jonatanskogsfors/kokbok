@@ -39,6 +39,8 @@ jobs:
 
       - name: Bygg siten
         run: RECIPES_DIR=./recipes npm run build
+        env:
+          ELEVENTY_PATH_PREFIX: /kokbok/
 
       - name: Ladda upp artefakt
         uses: actions/upload-pages-artifact@v3
