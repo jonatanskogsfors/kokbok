@@ -1,0 +1,18 @@
+---
+pagination:
+  data: categories
+  size: 1
+  alias: category
+permalink: "/kategorier/{{ category.slug }}/"
+layout: base.njk
+---
+<div class="category-page">
+  <h1>{{ category.name }}</h1>
+  <ul class="recipe-list">
+    {% for recipe in category.recipes %}
+      <li>
+        <a href="/recept/{{ recipe.slug }}/">{{ recipe.title }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+</div>

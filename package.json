@@ -1,0 +1,17 @@
+{
+  "name": "kokbok",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Publik receptsite med Cooklang och Eleventy",
+  "scripts": {
+    "build": "NODE_OPTIONS=--experimental-wasm-modules eleventy && pagefind --site _site",
+    "start": "eleventy --serve",
+    "start:local": "RECIPES_DIR=../receptbok NODE_OPTIONS=--experimental-wasm-modules eleventy --serve",
+    "clean": "rm -rf _site"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^3.0.0",
+    "@cooklang/cooklang": "^0.17.2",
+    "pagefind": "^1.3.0"
+  }
+}

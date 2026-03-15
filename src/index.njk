@@ -1,0 +1,24 @@
+---
+layout: base.njk
+title: Alla recept
+---
+<div class="home">
+  <h1>Skogstorpets kokbok</h1>
+
+  <div id="search"></div>
+
+  <div class="category-grid">
+    {% for category in categories %}
+      <a href="/kategorier/{{ category.slug }}/" class="category-card">
+        <span class="category-name">{{ category.name }}</span>
+        <span class="category-count">{{ category.recipes.length }} recept</span>
+      </a>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    new PagefindUI({ element: '#search', showImages: false });
+  });
+</script>

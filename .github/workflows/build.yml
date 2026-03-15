@@ -1,0 +1,57 @@
+name: Bygg och deploya
+
+on:
+  push:
+    branches: [main]
+  repository_dispatch:
+    types: [recipes-updated]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checka ut kokbok
+        uses: actions/checkout@v4
+
+      - name: Checka ut receptbok
+        uses: actions/checkout@v4
+        with:
+          repository: jonatanskogsfors/receptbok
+          path: recipes
+
+      - name: Sätt upp Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Installera beroenden
+        run: npm ci
+
+      - name: Bygg siten
+        run: RECIPES_DIR=./recipes npm run build
+
+      - name: Ladda upp artefakt
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploya till GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

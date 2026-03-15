@@ -1,0 +1,77 @@
+---
+layout: base.njk
+---
+<article class="recipe" data-pagefind-body>
+  <header class="recipe-header">
+    <h1>{{ recipe.title }}</h1>
+
+    {% if recipe.description %}
+      <p class="recipe-description">{{ recipe.description }}</p>
+    {% endif %}
+
+    <dl class="recipe-meta">
+      {% if recipe.servings %}
+        <dt>Portioner</dt>
+        <dd>{{ recipe.servings }}</dd>
+      {% endif %}
+    </dl>
+
+    {% if recipe.tags and recipe.tags.length %}
+      <ul class="recipe-tags">
+        {% for tag in recipe.tags %}
+          <li><a href="/taggar/{{ tag | slugify }}/">{{ tag }}</a></li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </header>
+
+  <div class="recipe-body">
+
+    <aside class="recipe-ingredients">
+      <h2>Ingredienser</h2>
+      <ul>
+        {% for ing in recipe.ingredients %}
+          <li>
+            {% if ing.quantity %}<span class="quantity">{{ ing.quantity }}</span> {% endif %}{{ ing.name }}{% if ing.note %} <span class="note">({{ ing.note }})</span>{% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+
+      {% if recipe.cookware and recipe.cookware.length %}
+        <h2>Redskap</h2>
+        <ul>
+          {% for cw in recipe.cookware %}
+            <li>
+              {% if cw.quantity %}<span class="quantity">{{ cw.quantity }}</span> {% endif %}{{ cw.name }}{% if cw.note %} <span class="note">({{ cw.note }})</span>{% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </aside>
+
+    <section class="recipe-instructions">
+      {% for section in recipe.sections %}
+        {% if section.name %}
+          <h2>{{ section.name }}</h2>
+        {% elseif recipe.sections.length > 1 %}
+          <h2>Del {{ loop.index }}</h2>
+        {% endif %}
+
+        <ol class="steps">
+          {% for step in section.steps %}
+            <li>
+              {% for part in step.parts %}
+                {% if part.type === "text" %}{{ part.value }}
+                {% elseif part.type === "ingredient" %}<span class="ingredient">{{ part.name }}{% if part.quantity %} ({{ part.quantity }}){% endif %}</span>
+                {% elseif part.type === "cookware" %}<span class="cookware">{{ part.name }}</span>
+                {% elseif part.type === "timer" %}<span class="timer">{% if part.name %}{{ part.name }}: {% endif %}{{ part.quantity }}</span>
+                {% endif %}
+              {% endfor %}
+            </li>
+          {% endfor %}
+        </ol>
+      {% endfor %}
+    </section>
+
+  </div>
+</article>
