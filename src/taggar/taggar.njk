@@ -1,19 +1,19 @@
 ---
 pagination:
-  data: categories
+  data: tags
   size: 1
-  alias: category
-permalink: "/kategorier/{{ category.slug }}/"
+  alias: tag
+permalink: "/taggar/{{ tag.slug }}/"
 layout: base.njk
 ---
 <nav class="breadcrumbs">
   <a href="{{ '/' | url }}"><span>Start</span></a>
-  <span><span>{{ category.name }}</span></span>
+  <span><span>{{ tag.name }}</span></span>
 </nav>
 <div class="category-page">
-  <h1>{{ category.name }}</h1>
+  <h1>{{ tag.name }}</h1>
   <div class="recipe-grid">
-    {% for recipe in category.recipes %}
+    {% for recipe in tag.recipes %}
       <a href="{{ ('/recept/' + recipe.slug + '/') | url }}" class="recipe-card">
         {% if recipe.imageUrl %}
           <img src="{{ recipe.imageUrl | url }}" alt="{{ recipe.title }}" class="recipe-card__image">

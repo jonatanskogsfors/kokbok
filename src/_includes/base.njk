@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% if title %}{{ title }} – {% endif %}Skogstorpets kokbok</title>
+  <title>{% if recipe.title %}{{ recipe.title }} – {% elif title %}{{ title }} – {% endif %}Skogstorpets kokbok</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500&display=swap">
@@ -11,9 +11,8 @@
 </head>
 <body>
   <header>
-    <nav>
-      <a href="{{ '/' | url }}" class="site-title">Skogstorpets kokbok</a>
-    </nav>
+    <a href="{{ '/' | url }}" class="site-title">Skogstorpets kokbok</a>
+    <div id="search"></div>
   </header>
 
   <main>
@@ -26,5 +25,23 @@
 
   {# Pagefind-sökning – skriptet genereras av pagefind efter bygget #}
   <script src="{{ '/pagefind/pagefind-ui.js' | url }}" defer></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.PagefindUI) {
+        new PagefindUI({ element: '#search', showImages: false });
+      } else {
+        document.getElementById('search').innerHTML =
+          '<input type="search" placeholder="Sök…" disabled style="width:100%;padding:0.4rem 0.6rem;border:1px solid #ccc;border-radius:4px;font-size:0.9rem;background:#f9f9f9;color:#aaa;">';
+      }
+
+      document.addEventListener('keydown', (e) => {
+        if (e.metaKey || e.ctrlKey || e.altKey) return;
+        if (e.key.length !== 1 || !/[a-zåäöA-ZÅÄÖ0-9]/.test(e.key)) return;
+        const input = document.querySelector('#search input');
+        if (!input || document.activeElement === input) return;
+        input.focus();
+      });
+    });
+  </script>
 </body>
 </html>
