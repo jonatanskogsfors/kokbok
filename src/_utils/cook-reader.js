@@ -26,6 +26,17 @@ export function slugify(name) {
     .replace(/[^a-z0-9-]/g, "");
 }
 
+function extractRawQuantity(qty) {
+  if (!qty?.value) return null;
+  const v = qty.value;
+  if (v.type !== "number") return null;
+  const n = v.value;
+  if (n.type === "regular") return { amount: n.value, unit: qty.unit ?? null };
+  if (n.type === "fraction") return { amount: (n.whole || 0) + n.num / n.den, unit: qty.unit ?? null };
+  if (n.type === "range") return { amount: n.start, amountMax: n.end, unit: qty.unit ?? null };
+  return null;
+}
+
 function formatQuantity(qty) {
   if (!qty) return null;
   const val = qty.value;
@@ -41,12 +52,12 @@ function formatQuantity(qty) {
   return qty.unit ? `${str}\u00A0${qty.unit}` : str || null;
 }
 
-function resolveItems(items, ingredients, cookware, timers) {
+function resolveItems(items, ingredients, cookware, timers, inlineQuantities) {
   return items.map((item) => {
     if (item.type === "text") return item;
     if (item.type === "ingredient") {
       const ing = ingredients[item.index];
-      return { type: "ingredient", name: ing.alias ?? ing.name, quantity: formatQuantity(ing.quantity) };
+      return { type: "ingredient", name: ing.alias ?? ing.name, quantity: formatQuantity(ing.quantity), rawQuantity: extractRawQuantity(ing.quantity) };
     }
     if (item.type === "cookware") {
       const cw = cookware[item.index];
@@ -55,6 +66,9 @@ function resolveItems(items, ingredients, cookware, timers) {
     if (item.type === "timer") {
       const t = timers[item.index];
       return { type: "timer", name: t.name, quantity: formatQuantity(t.quantity) };
+    }
+    if (item.type === "inlineQuantity") {
+      return { type: "text", value: formatQuantity(inlineQuantities[item.index]) ?? "" };
     }
     return item;
   });
@@ -73,6 +87,7 @@ function parseRecipe(filePath) {
     .map((ing) => ({
       name: ing.alias ?? ing.name,
       quantity: formatQuantity(ing.quantity),
+      rawQuantity: extractRawQuantity(ing.quantity),
       note: ing.note ?? null,
     }));
 
@@ -81,6 +96,7 @@ function parseRecipe(filePath) {
     .map((cw) => ({
       name: cw.alias ?? cw.name,
       quantity: formatQuantity(cw.quantity),
+      rawQuantity: extractRawQuantity(cw.quantity),
       note: cw.note ?? null,
     }));
 
@@ -97,7 +113,7 @@ function parseRecipe(filePath) {
         }
         return {
           number: c.value.number,
-          parts: resolveItems(c.value.items, raw.ingredients, raw.cookware, raw.timers),
+          parts: resolveItems(c.value.items, raw.ingredients, raw.cookware, raw.timers, raw.inline_quantities ?? []),
         };
       });
 
@@ -105,14 +121,14 @@ function parseRecipe(filePath) {
       .filter((i) => raw.ingredients[i]?.relation?.relation?.type === "definition")
       .map((i) => {
         const ing = raw.ingredients[i];
-        return { name: ing.alias ?? ing.name, quantity: formatQuantity(ing.quantity), note: ing.note ?? null };
+        return { name: ing.alias ?? ing.name, quantity: formatQuantity(ing.quantity), rawQuantity: extractRawQuantity(ing.quantity), note: ing.note ?? null };
       });
 
     const sectionCookware = [...cwIndices]
       .filter((i) => raw.cookware[i]?.relation?.type === "definition")
       .map((i) => {
         const cw = raw.cookware[i];
-        return { name: cw.alias ?? cw.name, quantity: formatQuantity(cw.quantity), note: cw.note ?? null };
+        return { name: cw.alias ?? cw.name, quantity: formatQuantity(cw.quantity), rawQuantity: extractRawQuantity(cw.quantity), note: cw.note ?? null };
       });
 
     return { name: section.name ?? null, steps, ingredients: sectionIngredients, cookware: sectionCookware };

@@ -26,8 +26,17 @@ export default function (eleventyConfig) {
   eleventyConfig.addFilter("renderParts", (parts) => {
     const html = parts.map((part) => {
       if (part.type === "text") return part.value;
-      if (part.type === "ingredient")
-        return `<span class="ingredient">${part.name}${part.quantity ? ` (${part.quantity})` : ""}</span>`;
+      if (part.type === "ingredient") {
+        let qtyHtml = "";
+        if (part.quantity) {
+          const rq = part.rawQuantity;
+          const attrs = rq
+            ? ` data-amount="${rq.amount}" data-unit="${rq.unit || ""}"${rq.amountMax ? ` data-amount-max="${rq.amountMax}"` : ""}`
+            : "";
+          qtyHtml = ` (<span class="quantity"${attrs}>${part.quantity}</span>)`;
+        }
+        return `<span class="ingredient">${part.name}${qtyHtml}</span>`;
+      }
       if (part.type === "cookware")
         return `<span class="cookware">${part.name}</span>`;
       if (part.type === "timer")

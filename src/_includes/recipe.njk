@@ -8,7 +8,7 @@ layout: base.njk
   {% endif %}
   <span><span>{{ recipe.title }}</span></span>
 </nav>
-<article class="recipe" data-pagefind-body>
+<article class="recipe" data-pagefind-body{% if recipe.servings %} data-servings="{{ recipe.servings }}"{% endif %}>
   <header class="recipe-header">
     <h1>{{ recipe.title }}</h1>
 
@@ -20,68 +20,84 @@ layout: base.njk
       <dl class="recipe-meta">
         {% if recipe.servings %}
           <dt>Portioner</dt>
-          <dd>{{ recipe.servings }}</dd>
+          <dd class="servings-control">
+            <button class="servings-btn" data-delta="-1" aria-label="Färre portioner">−</button>
+            <span id="servings-display">{{ recipe.servings }}</span>
+            <button class="servings-btn" data-delta="1" aria-label="Fler portioner">+</button>
+          </dd>
         {% endif %}
       </dl>
 
       {% if recipe.tags and recipe.tags.length %}
-        <ul class="recipe-tags">
-          {% for tag in recipe.tags %}
-            <li><a href="{{ ('/taggar/' + (tag | slugify) + '/') | url }}">{{ tag }}</a></li>
-          {% endfor %}
-        </ul>
+        <div class="recipe-tags-group">
+          <span class="recipe-tags-label">Taggar</span>
+          <ul class="recipe-tags">
+            {% for tag in recipe.tags %}
+              <li><a href="{{ ('/taggar/' + (tag | slugify) + '/') | url }}">{{ tag }}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
       {% endif %}
     </div>
   </header>
 
   <div class="recipe-body">
 
+    {% if recipe.imageUrl %}
+      <img src="{{ recipe.imageUrl | url }}" alt="{{ recipe.title }}" class="recipe-image recipe-body-image">
+    {% endif %}
+
     <aside class="recipe-ingredients">
       {% if recipe.sections.length > 1 %}
         {% for section in recipe.sections %}
           {% set sectionLabel = section.name if section.name else "Del " + loop.index %}
           {% if section.ingredients.length %}
-            <h2>Ingredienser{% if recipe.ingredientSectionCount > 1 %} <span class="section-label">({{ sectionLabel }})</span>{% endif %}</h2>
-            <ul>
-              {% for ing in section.ingredients %}
-                <li>{% if ing.quantity %}<span class="quantity">{{ ing.quantity }}</span> {% endif %}{{ ing.name }}{% if ing.note %} <span class="note">({{ ing.note }})</span>{% endif %}</li>
-              {% endfor %}
-            </ul>
+            <div class="ingredient-group">
+              <h2>Ingredienser{% if recipe.ingredientSectionCount > 1 %} <span class="section-label">({{ sectionLabel }})</span>{% endif %}</h2>
+              <ul>
+                {% for ing in section.ingredients %}
+                  <li>{% if ing.quantity %}<span class="quantity"{% if ing.rawQuantity %} data-amount="{{ ing.rawQuantity.amount }}" data-unit="{{ ing.rawQuantity.unit or '' }}"{% if ing.rawQuantity.amountMax %} data-amount-max="{{ ing.rawQuantity.amountMax }}"{% endif %}{% endif %}>{{ ing.quantity }}</span> {% endif %}{{ ing.name }}{% if ing.note %} <span class="note">({{ ing.note }})</span>{% endif %}</li>
+                {% endfor %}
+              </ul>
+            </div>
           {% endif %}
         {% endfor %}
         {% for section in recipe.sections %}
           {% set sectionLabel = section.name if section.name else "Del " + loop.index %}
           {% if section.cookware.length %}
-            <h2>Redskap{% if recipe.cookwareSectionCount > 1 %} <span class="section-label">({{ sectionLabel }})</span>{% endif %}</h2>
-            <ul>
-              {% for cw in section.cookware %}
-                <li>{% if cw.quantity %}<span class="quantity">{{ cw.quantity }}</span> {% endif %}{{ cw.name }}{% if cw.note %} <span class="note">({{ cw.note }})</span>{% endif %}</li>
-              {% endfor %}
-            </ul>
+            <div class="ingredient-group">
+              <h2>Redskap{% if recipe.cookwareSectionCount > 1 %} <span class="section-label">({{ sectionLabel }})</span>{% endif %}</h2>
+              <ul>
+                {% for cw in section.cookware %}
+                  <li>{% if cw.quantity %}<span class="quantity"{% if cw.rawQuantity %} data-amount="{{ cw.rawQuantity.amount }}" data-unit="{{ cw.rawQuantity.unit or '' }}"{% if cw.rawQuantity.amountMax %} data-amount-max="{{ cw.rawQuantity.amountMax }}"{% endif %}{% endif %}>{{ cw.quantity }}</span> {% endif %}{{ cw.name }}{% if cw.note %} <span class="note">({{ cw.note }})</span>{% endif %}</li>
+                {% endfor %}
+              </ul>
+            </div>
           {% endif %}
         {% endfor %}
       {% else %}
-        <h2>Ingredienser</h2>
-        <ul>
-          {% for ing in recipe.ingredients %}
-            <li>{% if ing.quantity %}<span class="quantity">{{ ing.quantity }}</span> {% endif %}{{ ing.name }}{% if ing.note %} <span class="note">({{ ing.note }})</span>{% endif %}</li>
-          {% endfor %}
-        </ul>
-        {% if recipe.cookware and recipe.cookware.length %}
-          <h2>Redskap</h2>
+        <div class="ingredient-group">
+          <h2>Ingredienser</h2>
           <ul>
-            {% for cw in recipe.cookware %}
-              <li>{% if cw.quantity %}<span class="quantity">{{ cw.quantity }}</span> {% endif %}{{ cw.name }}{% if cw.note %} <span class="note">({{ cw.note }})</span>{% endif %}</li>
+            {% for ing in recipe.ingredients %}
+              <li>{% if ing.quantity %}<span class="quantity"{% if ing.rawQuantity %} data-amount="{{ ing.rawQuantity.amount }}" data-unit="{{ ing.rawQuantity.unit or '' }}"{% if ing.rawQuantity.amountMax %} data-amount-max="{{ ing.rawQuantity.amountMax }}"{% endif %}{% endif %}>{{ ing.quantity }}</span> {% endif %}{{ ing.name }}{% if ing.note %} <span class="note">({{ ing.note }})</span>{% endif %}</li>
             {% endfor %}
           </ul>
+        </div>
+        {% if recipe.cookware and recipe.cookware.length %}
+          <div class="ingredient-group">
+            <h2>Redskap</h2>
+            <ul>
+              {% for cw in recipe.cookware %}
+                <li>{% if cw.quantity %}<span class="quantity"{% if cw.rawQuantity %} data-amount="{{ cw.rawQuantity.amount }}" data-unit="{{ cw.rawQuantity.unit or '' }}"{% if cw.rawQuantity.amountMax %} data-amount-max="{{ cw.rawQuantity.amountMax }}"{% endif %}{% endif %}>{{ cw.quantity }}</span> {% endif %}{{ cw.name }}{% if cw.note %} <span class="note">({{ cw.note }})</span>{% endif %}</li>
+              {% endfor %}
+            </ul>
+          </div>
         {% endif %}
       {% endif %}
     </aside>
 
     <section class="recipe-instructions">
-      {% if recipe.imageUrl %}
-        <img src="{{ recipe.imageUrl | url }}" alt="{{ recipe.title }}" class="recipe-image">
-      {% endif %}
       {% for section in recipe.sections %}
         {% if section.name %}
           <h2>{{ section.name }}</h2>
@@ -99,3 +115,54 @@ layout: base.njk
 
   </div>
 </article>
+
+<script>
+(function () {
+  const article = document.querySelector('article.recipe[data-servings]');
+  if (!article) return;
+  const originalServings = parseInt(article.dataset.servings, 10);
+  if (!originalServings) return;
+
+  const params = new URLSearchParams(window.location.search);
+  let current = parseInt(params.get('portioner'), 10) || originalServings;
+
+  function formatAmount(n) {
+    if (n <= 0) return '0';
+    const whole = Math.floor(n);
+    const frac = n - whole;
+    const fracs = [[1/8,'⅛'],[1/4,'¼'],[1/3,'⅓'],[3/8,'⅜'],[1/2,'½'],[5/8,'⅝'],[2/3,'⅔'],[3/4,'¾'],[7/8,'⅞']];
+    if (frac < 0.04) return String(whole || '0');
+    if (frac > 0.96) return String(whole + 1);
+    for (const [val, sym] of fracs) {
+      if (Math.abs(frac - val) < 0.04) return whole > 0 ? `${whole}\u00A0${sym}` : sym;
+    }
+    return (Math.round(n * 10) / 10).toString().replace('.', ',');
+  }
+
+  function update(servings) {
+    current = Math.max(1, servings);
+    const factor = current / originalServings;
+
+    document.querySelectorAll('.quantity[data-amount]').forEach(el => {
+      const amount = parseFloat(el.dataset.amount) * factor;
+      const amountMax = el.dataset.amountMax ? parseFloat(el.dataset.amountMax) * factor : null;
+      const unit = el.dataset.unit || '';
+      const str = amountMax ? `${formatAmount(amount)}–${formatAmount(amountMax)}` : formatAmount(amount);
+      el.textContent = unit ? `${str}\u00A0${unit}` : str;
+    });
+
+    const display = document.getElementById('servings-display');
+    if (display) display.textContent = current;
+
+    const url = new URL(window.location);
+    current === originalServings ? url.searchParams.delete('portioner') : url.searchParams.set('portioner', current);
+    history.replaceState(null, '', url);
+  }
+
+  update(current);
+
+  document.querySelectorAll('.servings-btn').forEach(btn => {
+    btn.addEventListener('click', () => update(current + parseInt(btn.dataset.delta, 10)));
+  });
+}());
+</script>
