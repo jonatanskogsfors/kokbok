@@ -1,6 +1,7 @@
 import { mkdirSync, copyFileSync } from "fs";
 import { join } from "path";
 import { getImageCopyJobs } from "./src/_utils/cook-reader.js";
+import QRCode from "qrcode";
 
 export default function (eleventyConfig) {
   // Kopiera statiska filer
@@ -46,6 +47,16 @@ export default function (eleventyConfig) {
     return html
       .replace(/  +/g, " ")
       .replace(/ ([.,;:!?)»\]])/g, "$1");
+  });
+
+  // QR-kod som inline SVG
+  eleventyConfig.addNunjucksAsyncFilter("qrcode", async (url, callback) => {
+    try {
+      const svg = await QRCode.toString(url, { type: "svg", margin: 1, width: 150 });
+      callback(null, svg);
+    } catch (e) {
+      callback(e);
+    }
   });
 
   // Recept utan kategori

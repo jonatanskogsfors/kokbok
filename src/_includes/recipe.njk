@@ -114,6 +114,16 @@ layout: base.njk
     </section>
 
   </div>
+
+  <footer class="recipe-sharing">
+    {% set recipePageUrl = "https://jonatanskogsfors.github.io/kokbok/recept/" + recipe.slug + "/" %}
+    <div class="share-qr-wrap">
+      <a href="{{ recipe.rawFileUrl }}" class="share-link" target="_blank" rel="noopener"><span class="share-cook-badge">&lt;.cook&gt;</span></a>
+      <div class="share-qr">
+        {{ recipePageUrl | qrcode | safe }}
+      </div>
+    </div>
+  </footer>
 </article>
 
 <script>

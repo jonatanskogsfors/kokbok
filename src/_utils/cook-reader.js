@@ -1,6 +1,6 @@
 import { Parser } from "@cooklang/cooklang";
 import { readFileSync, readdirSync, existsSync } from "fs";
-import { join, basename, extname, dirname, resolve } from "path";
+import { join, basename, extname, dirname, resolve, sep, relative } from "path";
 
 const IMAGE_EXTS = [".jpg", ".jpeg", ".png", ".webp", ".avif"];
 
@@ -180,6 +180,12 @@ export function loadRecipes(recipesDir) {
       const category = isCategory ? basename(parentDir) : null;
       const categorySlug = category ? slugify(category) : null;
 
+      const relativePath = relative(recipesDir, filePath)
+        .split(sep)
+        .map(encodeURIComponent)
+        .join("/");
+      const rawFileUrl = `https://raw.githubusercontent.com/jonatanskogsfors/receptbok/main/${relativePath}`;
+
       return {
         slug: slugify(basename(filePath, ".cook")),
         title,
@@ -194,6 +200,7 @@ export function loadRecipes(recipesDir) {
         ingredientSectionCount,
         cookwareSectionCount,
         imageUrl: imageExt ? `/bilder/${slugify(basename(filePath, ".cook"))}${imageExt}` : null,
+        rawFileUrl,
       };
     })
     .sort((a, b) => a.title.localeCompare(b.title, "sv"));
