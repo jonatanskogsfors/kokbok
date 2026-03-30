@@ -197,8 +197,12 @@ body > footer p { margin: 0; }
 .recipe-meta dt { background: var(--accent); color: white; padding: 0.25rem 0.5rem 0.25rem 0.75rem; font-weight: 500; }
 .recipe-meta dd { background: var(--accent-tint); color: var(--accent); padding: 0.25rem 0.5rem 0.25rem 0.4rem; margin: 0; font-weight: 600; border: 1px solid var(--accent); border-left: none; border-radius: 0 4px 4px 0; }
 .servings-control { display: flex; align-items: center; gap: 0.3rem; }
+.servings-x { color: #aaa; font-size: 0.85rem; }
+.servings-control input { width: 4ch; text-align: center; border: none; border-bottom: 1px solid var(--accent); background: transparent; font-size: inherit; font-family: inherit; color: inherit; padding: 0; }
 .servings-btn { background: var(--accent); color: white; border: none; width: 1.3rem; height: 1.3rem; border-radius: 50%; cursor: pointer; font-size: 0.9rem; line-height: 1; display: flex; align-items: center; justify-content: center; padding: 0; flex-shrink: 0; }
 .servings-btn:hover { filter: brightness(1.15); }
+#servings-reset { background: none; border: none; cursor: pointer; color: #aaa; font-size: 0.85rem; padding: 0; line-height: 1; }
+#servings-reset:hover { color: var(--accent); }
 
 /* Tagg-badges */
 .recipe-tags-group { display: flex; align-items: stretch; border-radius: 4px; overflow: hidden; font-size: 0.78rem; }
@@ -234,6 +238,7 @@ body > footer p { margin: 0; }
   padding-left: 0.6rem;
   border-left: 3px solid var(--accent);
 }
+.recipe-description { border: 1px solid #ccc; border-radius: 8px; padding: 0.75rem 1rem; margin: 0 0 1.5rem; }
 .ingredient-group { border: 1px solid var(--accent); border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 0.75rem; }
 .ingredient-group:last-child { margin-bottom: 0; }
 .recipe-ingredients ul { padding-left: 1.2rem; margin: 0; }

@@ -32,8 +32,8 @@ function extractRawQuantity(qty) {
   if (v.type !== "number") return null;
   const n = v.value;
   if (n.type === "regular") return { amount: n.value, unit: qty.unit ?? null };
-  if (n.type === "fraction") return { amount: (n.whole || 0) + n.num / n.den, unit: qty.unit ?? null };
-  if (n.type === "range") return { amount: n.start, amountMax: n.end, unit: qty.unit ?? null };
+  if (n.type === "fraction") return { amount: (n.value.whole || 0) + n.value.num / n.value.den, unit: qty.unit ?? null };
+  if (n.type === "range") return { amount: n.value.start, amountMax: n.value.end, unit: qty.unit ?? null };
   return null;
 }
 
@@ -44,8 +44,8 @@ function formatQuantity(qty) {
   if (val.type === "number") {
     const n = val.value;
     if (n.type === "regular")  str = String(n.value);
-    else if (n.type === "fraction") str = n.whole ? `${n.whole}\u00A0${n.num}/${n.den}` : `${n.num}/${n.den}`;
-    else if (n.type === "range") str = `${n.start}–${n.end}`;
+    else if (n.type === "fraction") str = n.value.whole ? `${n.value.whole}\u00A0${n.value.num}/${n.value.den}` : `${n.value.num}/${n.value.den}`;
+    else if (n.type === "range") str = `${n.value.start}–${n.value.end}`;
   } else if (val.type === "text") {
     str = val.value;
   }
@@ -192,7 +192,8 @@ export function loadRecipes(recipesDir) {
         tags,
         category,
         categorySlug,
-        servings: meta.servings ?? null,
+        servings: meta.servings ? parseInt(meta.servings) : (meta.yields ? parseInt(meta.yields) : null),
+        servingsUnit: meta.yields?.includes('%') ? meta.yields.split('%')[1].trim() : null,
         description: meta.description ?? null,
         ingredients,
         cookware,
